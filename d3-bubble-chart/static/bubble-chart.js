@@ -2,7 +2,7 @@
 
     dw.visualization.register('bubble-chart', {
 
-        render: function($element, dataset, axes, theme) {
+        render: function($element, dataset, axes, theme, chart) {
             // create the empty structure
             var data = { children: [] };
             // loop over each row in our dataset
@@ -37,7 +37,9 @@
                 .data(bubble.nodes(data)
                     .filter(function(d) { return !d.children; }))
             .enter().append("g")
-                .attr("class", "node")
+                .attr("class", function(d) {
+                    return chart.isHighlighted(d.label) ? "node highlighted" : "node";
+                })
                 .attr("transform", function(d) {
                     return "translate(" + d.x + "," + d.y + ")";
                 });

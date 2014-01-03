@@ -7,3 +7,11 @@ text {
 text.inverted {
     fill: white;
 }
+
+.node circle {
+    opacity: 0.5;
+}
+
+.node.highlighted circle {
+    opacity: 1;
+}
