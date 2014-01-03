@@ -49,7 +49,7 @@
 
             node.append("circle")
                 .attr("r", function(d) { return d.r; })
-                .style("fill", '#ccc');
+                .style("fill", theme.colors.palette[0]);
 
             node.append("text")
                 .attr("text-anchor", "middle")
