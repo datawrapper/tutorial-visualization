@@ -17,7 +17,9 @@
 
             // the actual D3 code starts below this
             // adapted from https://gist.github.com/mbostock/4063269
-            var diameter = 300,
+
+            var size = this.size(),  // returns array [w, h]
+                diameter = Math.min(size[0], size[1]),
                 format = d3.format(",d");
 
             var bubble = d3.layout.pack()
@@ -28,6 +30,7 @@
             var vis = d3.select($element.get(0)).append("svg")
                 .attr("width", diameter)
                 .attr("height", diameter)
+                .style("margin-left", (size[0] - diameter) / 2)
                 .attr("class", "bubble");
 
             var node = vis.selectAll("g.node")
