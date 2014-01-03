@@ -17,6 +17,14 @@ class DatawrapperPlugin_D3BubbleChart extends DatawrapperPlugin {
             "title" => "Bubble Chart (d3)",
 
             /*
+             * Libraries that are used by the visualization.
+             */
+            "libraries" => array(array(
+                "local" => "vendor/d3.min.js",
+                "cdn" => "//cdnjs.cloudflare.com/ajax/libs/d3/3.3.11/d3.min.js"
+            )),
+
+            /*
              * The axes (or dimensions) provided by the visualization. The bubble
              * chart provides three axes for the bubble radius (size), fill (color)
              * and label.
