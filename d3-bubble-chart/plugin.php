@@ -48,7 +48,13 @@ class DatawrapperPlugin_D3BubbleChart extends DatawrapperPlugin {
                     "label" => "Show bubble labels",
                     "default" => true
                 )
-            )
+            ),
+
+            /*
+             * Here we define the axis that is used as
+             * row keys for the highlight feature
+             */
+            "highlight-key" => "label"
         );
 
         // register the visualization
