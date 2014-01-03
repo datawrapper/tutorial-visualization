@@ -5,7 +5,7 @@ This tutorial shows how to add new visualization modules to Datawrapper. In this
 
 ![bubble chart](https://gist.github.com/mbostock/4063269/raw/5144eafeac9e298962133e9e31de45da21714108/thumbnail.png)
 
-Additionally to reading this tutorial you can also [check the commit history of this repository](https://github.com/datawrapper/tutorial-visualization/commits/master) to follow the individual steps.
+Additionally to reading this tutorial you can also [check the commit history of this repository](https://github.com/datawrapper/tutorial-visualization/commits/master) to follow the individual steps. Also, if you're not into reading lenghty explanations at all, jump right into [the commented code](d3-bubble-chart).
 
 ### Creating the host plugin
 
