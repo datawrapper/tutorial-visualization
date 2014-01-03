@@ -25,7 +25,7 @@
                 .size([diameter, diameter])
                 .padding(1.5);
 
-            var vis = d3.select(el.get(0)).append("svg")
+            var vis = d3.select($element.get(0)).append("svg")
                 .attr("width", diameter)
                 .attr("height", diameter)
                 .attr("class", "bubble");
