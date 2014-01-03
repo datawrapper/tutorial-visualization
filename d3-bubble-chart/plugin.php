@@ -37,6 +37,18 @@ class DatawrapperPlugin_D3BubbleChart extends DatawrapperPlugin {
                     "accepts" => array("number")
                 )
             ),
+
+            /*
+             * Config options that are displayed to the user in the right
+             * sidebar in the chart editor.
+             */
+            "options" => array(
+                "show-labels" => array(
+                    "type" => "checkbox",
+                    "label" => "Show bubble labels",
+                    "default" => true
+                )
+            )
         );
 
         // register the visualization

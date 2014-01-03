@@ -51,15 +51,17 @@
                 .attr("r", function(d) { return d.r; })
                 .style("fill", theme.colors.palette[0]);
 
-            node.append("text")
-                .attr("text-anchor", "middle")
-                .attr("dy", ".3em")
-                .attr("class", function(d) {
-                    return d3.lab(theme.colors.palette[0]).l < 80 ? "inverted" : "";
-                })
-                .text(function(d) {
-                    return d.label.substring(0, d.r / 5);
-                });
+            if (this.get('show-labels')) {
+                node.append("text")
+                    .attr("text-anchor", "middle")
+                    .attr("dy", ".3em")
+                    .attr("class", function(d) {
+                        return d3.lab(theme.colors.palette[0]).l < 80 ? "inverted" : "";
+                    })
+                    .text(function(d) {
+                        return d.label.substring(0, d.r / 5);
+                    });
+            }
         }
 
     });
