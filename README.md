@@ -5,7 +5,7 @@ This tutorial shows how to add new visualization modules to Datawrapper. In this
 
 ![bubble chart](https://gist.github.com/mbostock/4063269/raw/5144eafeac9e298962133e9e31de45da21714108/thumbnail.png)
 
-Additionally to reading this tutorial you can also [check the commit history of this repository](https://github.com/datawrapper/tutorial-visualization/commits/master) to follow the individual steps. Also, if you're not into reading lenghty explanations at all, jump right into [the commented code](d3-bubble-chart).
+Additionally to reading this tutorial you can also [check the commit history of this repository](https://github.com/datawrapper/tutorial-visualization/commits/master) to follow the individual steps. Also, if you're not into reading lenghty explanations at all, feel free to jump right into [the commented code](d3-bubble-chart).
 
 ### Creating the host plugin
 
@@ -44,7 +44,7 @@ Installed plugin d3-bubble-chart.
 
 ### Register the visualization
 
-To register the visualization we will execute a special core method ``DatawrapperVisualization::register``. It takes two arguments: the plugin that provides the visualization (``$this``) and an array with the visualization meta data (``$visMeta``).
+To register the visualization we will execute the core method ``DatawrapperVisualization::register``. It takes two arguments: the plugin that provides the visualization (``$this``) and an array with the visualization meta data (``$visMeta``).
 
 [We start easy](https://github.com/datawrapper/tutorial-visualization/commit/2a75fdb29ce4466ffab6043695721be675fcc44b) with just some basic meta information: the visualization ``id`` and the ``title`` that is displayed in the chart editor.
 
@@ -65,9 +65,9 @@ class DatawrapperPlugin_D3BubbleChart extends DatawrapperPlugin {
 
 ### Define the visual axes
 
-At this point it's time to introduce the concept of axes we are using in Datawrapper. Axes (aka dimensions) are the visual properties that are later mapped to columns of the uploaded dataset. For example, an simple scatter plot would provide two axes for the x and y position of each dot, each of which would accept numerical values.
+At this point it's time to introduce the concept of axes that we are using in Datawrapper. Axes (or *dimensions*) are more or less the visual properties or your chart that are later mapped to columns of the uploaded dataset. For example, in a simple scatter plot there would be two axes for the x and y position of each dot. Each axis can define what column types it accepts.
 
-In case of our bubble chart we at least need two axes for the bubble size and a label to be displayed on each bubble. The label axis accepts text and date columns while the size accepts only numerical columns.
+In case of our bubble chart we at least need two axes for the [bubble size](https://github.com/datawrapper/tutorial-visualization/blob/9f3797cfd019370132f2c81164d652228b033bd6/d3-bubble-chart/plugin.php#L28-L30) and the [label](https://github.com/datawrapper/tutorial-visualization/blob/9f3797cfd019370132f2c81164d652228b033bd6/d3-bubble-chart/plugin.php#L26-L28) to be displayed on each bubble. The label axis accepts text and date columns while the size axis accepts only numerical columns.
 
 ```php
 <?php
@@ -94,13 +94,13 @@ class DatawrapperPlugin_D3BubbleChart extends DatawrapperPlugin {
 
 [Once the axes are defined](https://github.com/datawrapper/tutorial-visualization/commit/9f3797cfd019370132f2c81164d652228b033bd6) Datawrapper will automatically assign data columns to them when a new chart is created. The first text or date column is assigned to the ``label`` axis, and the first number column is assigned to the ``size`` column.
 
-### Prepare the visualization JavaScript
+### Preparing the visualization JavaScript
 
 At first we need to create the JavaScript file that is loaded with the chart. Like any plugin file that we want to be publicly accessible, we must be locate it in a sub-folder named ``static/``.
 
-It is important to name the file exactly after the visualization id you defined in the ``$visMeta`` array above, so in this case we would name it [bubble-chart.js](https://github.com/datawrapper/tutorial-visualization/tree/deea47fa54e93dac684506e48924962eb5986481/d3-bubble-chart/static).
+It's important to name the file exactly after the visualization id you defined in the ``$visMeta`` array above, so in this case we would name it [bubble-chart.js](https://github.com/datawrapper/tutorial-visualization/tree/deea47fa54e93dac684506e48924962eb5986481/d3-bubble-chart/static).
 
-In the [base skeleton for the file](https://github.com/datawrapper/tutorial-visualization/blob/deea47fa54e93dac684506e48924962eb5986481/d3-bubble-chart/static/bubble-chart.js) we simply call the framework function ``dw.visualization.register`` to register it's code. As first argument we pass the visualization id and last second argument is an object with a function ``render()``.
+In the [basic skeleton for the file](https://github.com/datawrapper/tutorial-visualization/blob/deea47fa54e93dac684506e48924962eb5986481/d3-bubble-chart/static/bubble-chart.js) we simply call the framework function ``dw.visualization.register`` to register it's JS code. As first argument we pass the visualization id and last second argument is an object with a function ``render()``.
 
 ```javascript
 dw.visualization.register('bubble-chart', {
@@ -112,24 +112,22 @@ dw.visualization.register('bubble-chart', {
 });
 ```
 
-And this ``render`` function is where all our code will go into.
+And this ``render()`` function is where all our code will go into.
 
-### Prepare the dataset
+### Preparing the dataset
 
 Now it is the time where the actual fun starts, as we are switching to JavaScript to code our visualization. Let's begin with collecting and preparing the data.
 
 The bubble chart code (that we [adapted from this example](https://gist.github.com/mbostock/4063269)) expects the data in a structure like this:
 
 ```json
-{
-    "children": [
-        { "label": "Bubble 1", "value": 123 },
-        { "label": "Bubble 2", "value": 234 }
-    ]
-}
+{ "children": [
+    { "label": "Bubble 1", "value": 123 },
+    { "label": "Bubble 2", "value": 234 }
+]}
 ```
 
-To access the chart's dataset we can use the references to the ``dataset`` and the chart ``axes``.
+To access the chart's dataset we can use the references to the ``dataset`` and the chart ``axes``. If you want to learn more about the API please check out the [JavaScript API Reference](https://github.com/datawrapper/datawrapper/wiki/JavaScript-API-Reference) in the wiki.
 
 ```javascript
 render: function($element, dataset, axes, theme) {
@@ -153,7 +151,7 @@ To see if this works we can output the data using ``console.log``. At this point
 
 ### Code the visualization!
 
-To code the visualization we start by adapting the bubble chart example [kindly provided by Mike Bostock](https://gist.github.com/mbostock/4063269). One thing we have to change is the selector to which we append the svg element. Instead of selecting the body we will use the ``$element`` instance (which happens to be a jQuery selector).
+To code the visualization we start by adapting the bubble chart example [kindly provided by Mike Bostock](https://gist.github.com/mbostock/4063269). One thing we have to change is the selector to which we append the svg element. Instead of appending to the body we will use the ``$element`` argument (which happens to be a jQuery selector).
 
 ```javascript
 var vis = d3.select($element.get(0)).append("svg")
@@ -162,28 +160,28 @@ var vis = d3.select($element.get(0)).append("svg")
     .attr("class", "bubble");
 ```
 
-The other thing we change is the data. In our case we don't need to load an external JSON file so we don't need to wrap the visualization code inside a ``d3.json`` call. Also we don't use the ``d3.scale.category10`` palette yet as all our circles will have the same color.
+The other thing we change is the data. In our case we don't need to load an external JSON file so we don't need to wrap the visualization code in a ``d3.json`` call. Also we don't use the ``d3.scale.category10`` palette yet, as all our circles will have the same color.
 
-The full code at this point [can be found here](https://github.com/datawrapper/tutorial-visualization/blob/4fcdffc8b8b83b618a27970b4437f22b64fea6bf/d3-bubble-chart/static/bubble-chart.js). However, if we test the chart in Datawrapper we will experience an error saying: *Uncaught ReferenceError: d3 is not defined*. Obviously we yet need to tell Datawrapper that our visualization depends on the third-party library D3.js.
+The full code at this point [can be found here](https://github.com/datawrapper/tutorial-visualization/blob/4fcdffc8b8b83b618a27970b4437f22b64fea6bf/d3-bubble-chart/static/bubble-chart.js). However, if we test the chart in Datawrapper we will experience an error saying: *Uncaught ReferenceError: d3 is not defined*. Obviously, we forgot to tell Datawrapper that our visualization depends on the third-party library D3.js.
 
 ### Declaring dependencies to third-party libraries
 
-To do so we do two things: First we download d3.min.js and [store it](https://github.com/datawrapper/tutorial-visualization/commit/81425a7221f0f5c008c98111c0e0f5478b21df46) under ``static/vendor/``.
+To do so we do two things: First we download [d3.min.js](http://cdnjs.cloudflare.com/ajax/libs/d3/3.3.11/d3.min.js) and [store it](https://github.com/datawrapper/tutorial-visualization/commit/81425a7221f0f5c008c98111c0e0f5478b21df46) under ``static/vendor/``.
 
-Second we need to tell Datawrapper that it needs to load the library with the chart. Therefor we [add the new attribute](https://github.com/datawrapper/tutorial-visualization/commit/e04e072f6248ab025952ed25ec004de39aaf414e) ``libraries`` to the visualization meta data we define in [plugin.php](https://github.com/datawrapper/tutorial-visualization/commit/e04e072f6248ab025952ed25ec004de39aaf414e). For each library we can provide two URLs, a local URL that is used in the Datawrapepr editor and a remote URL that will be used in the published chart.
+Second we need to tell Datawrapper that it should load the library with the chart. Therefor we [add the new attribute](https://github.com/datawrapper/tutorial-visualization/commit/e04e072f6248ab025952ed25ec004de39aaf414e) ``libraries`` to the visualization meta data we define in [plugin.php](https://github.com/datawrapper/tutorial-visualization/commit/e04e072f6248ab025952ed25ec004de39aaf414e). For each library we can provide two URLs, a local URL that is used in the Datawrapepr editor and a remote URL that will be used in the published chart.
 
     "libraries" => array(array(
         "local" => "vendor/d3.min.js",
         "cdn" => "//cdnjs.cloudflare.com/ajax/libs/d3/3.3.11/d3.min.js"
     )),
 
-After fixing the dependency the resulting chart should look something like this:
+After fixing the D3.js dependency the resulting chart should look something like this:
 
 ![output](http://vis4.net/tmp/bubble-chart-1.png)
 
 ### Fitting the visualization into the chart
 
-You might have noticed that at this point the visualization uses a fixed size, which is not what we want in Datawrapper. Instead we will call ``this.size()`` to get the width and height available for the chart and [use the smallest side as diameter](https://github.com/datawrapper/tutorial-visualization/commit/937973ed169a9b3888fe9601cc61b182f9726dd6).
+You might have noticed that at this point the visualization uses a fixed size, which is not what we want in Datawrapper. Instead we will call [``this.size()``](https://github.com/datawrapper/datawrapper/wiki/Visualization#wiki-vis_size) to get the width and height available for the chart and [use the smallest side as diameter](https://github.com/datawrapper/tutorial-visualization/commit/937973ed169a9b3888fe9601cc61b182f9726dd6).
 
 ```javascript
 var size = this.size(),  // returns array [width, height]
@@ -192,7 +190,7 @@ var size = this.size(),  // returns array [width, height]
 
 ### Using the theme colors
 
-Next thing we do is to re-use the colors defined in the currently selected theme, so our bubble chart will fit into the design. So instead of the [fixed color](https://github.com/datawrapper/tutorial-visualization/blob/937973ed169a9b3888fe9601cc61b182f9726dd6/d3-bubble-chart/static/bubble-chart.js#L52) *"#ccc"* we are going to [take the first color](https://github.com/datawrapper/tutorial-visualization/commit/bd3a3fdc17127f80a85e819f40f3a00f042306cd) of the theme's palette.
+Next thing we do is to re-use the colors defined in the currently selected theme. So instead of the [fixed color](https://github.com/datawrapper/tutorial-visualization/blob/937973ed169a9b3888fe9601cc61b182f9726dd6/d3-bubble-chart/static/bubble-chart.js#L52) *"#ccc"* we are going to [take the first color](https://github.com/datawrapper/tutorial-visualization/commit/bd3a3fdc17127f80a85e819f40f3a00f042306cd) of the theme's palette.
 
 ```javascript
 node.append("circle")
@@ -200,11 +198,11 @@ node.append("circle")
     .style("fill", theme.colors.palette[0]);
 ```
 
-To ensure that the labels remain readable it's a good idea to [check the Lab-lightness of the selected color](https://github.com/datawrapper/tutorial-visualization/commit/ab7b452ebf5f333edf28cc73d94b043f458df713).
+To ensure that the labels remain readable it's a good idea to [check the Lab-lightness of the selected color](https://github.com/datawrapper/tutorial-visualization/commit/ab7b452ebf5f333edf28cc73d94b043f458df713) and invert the label color if the background is too dark.
 
 ### Putting stylesheets into separate file
 
-At this point our code is already infiltrated with style definitions that would better fit into a separate CSS file. Datawrapper makes this very easy by automatically including the CSS files named after the visualization id. So in our case we simply [add a file ``bubble-chart.css``](https://github.com/datawrapper/tutorial-visualization/commit/435fbbecf8b583f40e8fda94376d2996b7e11bec) into the ``static/`` folder and that's it.
+At this point our code is already infiltrated with style definitions that would better fit into a separate CSS file. Datawrapper makes this very easy by automatically including the CSS file that is named after the visualization id. So in our case we simply [add a file ``bubble-chart.css``](https://github.com/datawrapper/tutorial-visualization/commit/435fbbecf8b583f40e8fda94376d2996b7e11bec) into the ``static/`` folder and that's it.
 
 Then we can remove the ``.style()`` call and [instead use a CSS class](https://github.com/datawrapper/tutorial-visualization/commit/c9edf2746b58ecbfb19255f4981a94ddd519d837) to invert the labels.
 
@@ -227,7 +225,7 @@ Let's say we want to allow users to turn off the bubble labels. All we need to d
         )
     )
 
-Now the sidebar we see our new checkbox, and after unchecking it the labels disappear.
+Now the sidebar we see our new checkbox, and after unchecking it the labels disappear. In the wiki you can find out more about the other [option types that are available](https://github.com/datawrapper/datawrapper/wiki/Visualization-options) in Datawrapper. 
     
 ![output](http://vis4.net/tmp/bubble-chart-3.png)
 
@@ -255,9 +253,9 @@ And again, that's it. Now we can select elements in the chart editor and the rem
 
 For this tutorial this should be enough to demonstrate how you can add new visualization modules to Datawrapper. As you have seen, the integration of an existing D3.js visualization is pretty straight-forward, and can be done within an hour easily.
 
-However, while what we achieved so far is certainly nice, a lot more work is needed to get the bubble chart up to Datawrapper quality (tm). This is something that is easy to be forgotten: a good chart consists of way more than just a few circles and some text, and it is hard work to prepare a visualization for all the future dataset that will cross its way.
+However, while what we achieved so far is certainly nice, a lot more work is needed to get the bubble chart up to Datawrapper quality™. This is something that is easily forgotten: A good chart consists of way more than just a few nicely arranged circles and some text. And that it is really hard work to prepare a visualization for all the future datasets that will cross its way.
 
-Anyway, we hope you enjoyed this tutorial and hopefully will create some nice new chart types!
+Anyway, we hope you enjoyed this tutorial and will create some nice new visualization modules! If you do, please [let us know](https://github.com/datawrapper/datawrapper/issues) so we can start a collection of nice plugins in the future.
 
 ### Want to start hacking now?
 
