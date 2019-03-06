@@ -45,7 +45,8 @@
                     .filter(function(d) { return !d.children; }))
             .enter().append("g")
                 .attr("class", function(d) {                                  
-                    return (me.get('highlighted-series', []).indexOf(d.label) > -1) ? "node highlighted" : "node";
+                    return (me.get('highlighted-series', []).indexOf(d.label) > -1 ||
+                            me.get('highlighted-series', []).length == 0) ? "node highlighted" : "node";
                 })
                 .attr("transform", function(d) {
                     return "translate(" + d.x + "," + d.y + ")";
