@@ -1,11 +1,9 @@
 
 ## Adding visualization modules to Datawrapper
 
-This tutorial shows how to add new visualization modules to Datawrapper. In this example we are going to add a nice [D3.js bubble chart](http://bl.ocks.org/mbostock/4063269) so Datawrapper users can create them without writing a single line of code.
+This tutorial shows how to add new visualization modules to Datawrapper. In this example we are going to add a nice [D3.js bubble chart](http://bl.ocks.org/mbostock/4063269) so Datawrapper users can create them without writing a single line of code. If you're not into reading lenghty explanations at all, feel free to jump right into [the commented code](d3-bubble-chart).
 
 ![bubble chart](https://gist.github.com/mbostock/4063269/raw/5144eafeac9e298962133e9e31de45da21714108/thumbnail.png)
-
-Additionally to reading this tutorial you can also [check the commit history of this repository](https://github.com/datawrapper/tutorial-visualization/commits/master) to follow the individual steps. Also, if you're not into reading lenghty explanations at all, feel free to jump right into [the commented code](d3-bubble-chart).
 
 ### Creating the host plugin
 
@@ -22,18 +20,7 @@ Now you need to [create the package.json file](https://github.com/datawrapper/tu
 }
 ```
 
-As our plugin wants to provide a new visualization we need to [create the plugin class plugin.php](https://github.com/datawrapper/tutorial-visualization/commit/22c5d5b494a37d38efb0c32accc12c61cb134c12). The plugin class will be loaded by Datawrapper and its ``init()`` function is invoked on every request.
-
-```php
-<?php
-
-class DatawrapperPlugin_D3BubbleChart extends DatawrapperPlugin {
-
-    public function init(){
-        // do some stuff here
-    }
-}
-```
+As our plugin wants to provide a new visualization we need to create the plugin file init.php. The plugin initialization file will be loaded and invoked by Datawrapper on every request.
 
 By now the plugin is already ready for installation. To do so you open a command line and run the following inside the Datawrapper root folder:
 
@@ -44,23 +31,18 @@ Installed plugin d3-bubble-chart.
 
 ### Register the visualization
 
-To register the visualization we will execute the core method ``DatawrapperVisualization::register``. It takes two arguments: the plugin that provides the visualization (``$this``) and an array with the visualization meta data (``$visMeta``).
+To register the visualization we will execute the core method ``DatawrapperVisualization::register``. It takes two arguments: the plugin that provides the visualization (``$plugin``) and an array with the visualization meta data.
 
 [We start easy](https://github.com/datawrapper/tutorial-visualization/commit/2a75fdb29ce4466ffab6043695721be675fcc44b) with just some basic meta information: the visualization ``id`` and the ``title`` that is displayed in the chart editor.
 
 ```php
 <?php
 
-class DatawrapperPlugin_D3BubbleChart extends DatawrapperPlugin {
+DatawrapperVisualization::register($plugin, [
+    "id" => "bubble-chart",
+    "title" => "Bubble Chart (d3)"
+]);
 
-    public function init(){
-        $visMeta = array(
-            "id" => "bubble-chart",
-            "title" => "Bubble Chart (d3)"
-        );
-        DatawrapperVisualization::register($this, $visMeta);
-    }
-}
 ```
 
 ### Define the visual axes
@@ -72,24 +54,18 @@ In case of our bubble chart we at least need two axes for the [bubble size](http
 ```php
 <?php
 
-class DatawrapperPlugin_D3BubbleChart extends DatawrapperPlugin {
-
-    public function init(){
-        $visMeta = array(
-            "id" => "bubble-chart",
-            "title" => "Bubble Chart (d3)",
-            "axes" => array(
-                "label" => array(
-                    "accepts" => array("text", "date")
-                ),
-                "size" => array(
-                    "accepts" => array("number")
-                )
-            )
-        );
-        DatawrapperVisualization::register($this, $visMeta);
-    }
-}
+DatawrapperVisualization::register($plugin, [
+    "id" => "bubble-chart",
+    "title" => "Bubble Chart (d3)",
+    "axes" => array(
+        "label" => array(
+            "accepts" => array("text", "date")
+        ),
+        "size" => array(
+            "accepts" => array("number")
+        )
+    )
+]);
 ```
 
 [Once the axes are defined](https://github.com/datawrapper/tutorial-visualization/commit/9f3797cfd019370132f2c81164d652228b033bd6) Datawrapper will automatically assign data columns to them when a new chart is created. The first text or date column is assigned to the ``label`` axis, and the first number column is assigned to the ``size`` column.
@@ -98,7 +74,7 @@ class DatawrapperPlugin_D3BubbleChart extends DatawrapperPlugin {
 
 At first we need to create the JavaScript file that is loaded with the chart. Like any plugin file that we want to be publicly accessible, we must be locate it in a sub-folder named ``static/``.
 
-It's important to name the file exactly after the visualization id you defined in the ``$visMeta`` array above, so in this case we would name it [bubble-chart.js](https://github.com/datawrapper/tutorial-visualization/tree/deea47fa54e93dac684506e48924962eb5986481/d3-bubble-chart/static).
+It's important to name the file exactly after the visualization id you defined in the array above, so in this case we would name it [bubble-chart.js](https://github.com/datawrapper/tutorial-visualization/tree/deea47fa54e93dac684506e48924962eb5986481/d3-bubble-chart/static).
 
 In the [basic skeleton for the file](https://github.com/datawrapper/tutorial-visualization/blob/deea47fa54e93dac684506e48924962eb5986481/d3-bubble-chart/static/bubble-chart.js) we simply call the framework function ``dw.visualization.register`` to register it's JS code. As first argument we pass the visualization id and last second argument is an object with a function ``render()``.
 
@@ -202,7 +178,7 @@ To ensure that the labels remain readable it's a good idea to [check the Lab-lig
 
 ### Putting stylesheets into separate file
 
-At this point our code is already infiltrated with style definitions that would better fit into a separate CSS file. Datawrapper makes this very easy by automatically including the CSS file that is named after the visualization id. So in our case we simply [add a file ``bubble-chart.css``](https://github.com/datawrapper/tutorial-visualization/commit/435fbbecf8b583f40e8fda94376d2996b7e11bec) into the ``static/`` folder and that's it.
+At this point our code is already infiltrated with style definitions that would better fit into a separate CSS file. So in our case we simply [add a file ``bubble-chart.less``](https://github.com/datawrapper/tutorial-visualization/commit/435fbbecf8b583f40e8fda94376d2996b7e11bec) into the ``static/`` folder and that's it.
 
 Then we can remove the ``.style()`` call and [instead use a CSS class](https://github.com/datawrapper/tutorial-visualization/commit/c9edf2746b58ecbfb19255f4981a94ddd519d837) to invert the labels.
 
