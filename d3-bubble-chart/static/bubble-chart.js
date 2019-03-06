@@ -2,7 +2,14 @@
 
     dw.visualization.register('bubble-chart', {
 
-        render: function($element, dataset, axes, theme, chart) {
+        render: function(el, dataset, axes, theme, chart) {
+            var $element = $(el),
+                me = this,
+                dataset = me.dataset,
+                axes = me.axes(true),
+                theme = me.theme(),
+                chart = me.chart();
+
             // create the empty structure
             var data = { children: [] };
             // loop over each row in our dataset
@@ -37,8 +44,8 @@
                 .data(bubble.nodes(data)
                     .filter(function(d) { return !d.children; }))
             .enter().append("g")
-                .attr("class", function(d) {
-                    return chart.isHighlighted(d.label) ? "node highlighted" : "node";
+                .attr("class", function(d) {                                  
+                    return (me.get('highlighted-series', []).indexOf(d.label) > -1) ? "node highlighted" : "node";
                 })
                 .attr("transform", function(d) {
                     return "translate(" + d.x + "," + d.y + ")";
@@ -64,6 +71,25 @@
                         return d.label.substring(0, d.r / 5);
                     });
             }
+        },
+
+        keys: function() {
+            var vis = this,
+                axes = vis.axes(true);
+
+            if (axes.label) {
+                var fmt = vis.chart().columnFormatter(axes.label),
+                    keys = [];
+                
+                axes.label.each(function(val) {
+                    var v = String(fmt(val));
+                    if (keys.indexOf(v) == -1) keys.push(v);
+                });
+
+                return keys;
+            }
+
+            return [];
         }
 
     });
